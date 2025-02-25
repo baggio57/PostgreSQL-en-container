@@ -162,6 +162,20 @@ postgresql-rw       ClusterIP   10.233.27.141   <none>        5432/TCP   4h1m
 
 Pour creer une nouvelle connexion sur pgadmin, il faut :
 
+    Name : postgresql (Onglet General) ;
+    Host name/address : postgresql-rw (Onglet Connection) ; C’est le nom (DNS) du Service créé par CloudNativePG
+    Port : 5432 ;
+    Username : app;
+    Password :
+        Il doit être récupéré directement depuis le Secret postgresql-app, avec par exemple, la commande suivante :
+
+        kubectl get secret postgresql-app -o json | jq -r '.data.password' | base64 -d
+        CVDVkYhMuKwH4Zg1xgESOSknA3R8Jet7en36NeyRdOoNT5WpBoWYBs0xccNMKO1H
+
+En combinant plusieurs outils, je récupère le mot de passe du rôle app dans le Secret postgresql-app au format JSON. 
+L’outil jq, véritable couteaux suisse de la manipulation de données au format JSON, permet d’extraire la valeur de la clé .data.password. 
+Celle-ci étant encodée en Base64, j’utilise donc l’outil base64 pour le décoder.
+
 
 
 
