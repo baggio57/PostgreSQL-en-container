@@ -47,5 +47,27 @@ Bien évidemment, cette instance a pu être déployée aussi vite car l’instan
 Dans un cas réel, les données devront être récupérées depuis le primaire et copiées pour le secondaire.
 
 -----------------------------
+Perte de l’instance primaire
+Nos deux instances fonctionnent bien jusqu’au jour où l’instance primaire connaît un problème. Véritable cauchemar du DBA, qui, malgré les différentes protections et outils mis en place, 
+ne veut pas vivre cette situation. Est-ce que l’opérateur CloudNativePG permet au DBA de dormir un peu plus sur ces deux oreilles ?
 
+kubectl delete pod postgresql-1 
+pod "postgresql-1" deleted
 
+Automatiquement, l’opérateur a promu l’instance postgresql-2 comme nouveau primaire :
+
+kubectl get cluster  
+NAME         AGE   INSTANCES   READY   STATUS                     PRIMARY
+postgresql   44h   2           2       Cluster in healthy state   postgresql-2
+
+Et en parallèle a recréé l’instance postgresql-1 :
+
+kubectl get pod                
+NAME           READY   STATUS    RESTARTS   AGE
+postgresql-1   1/1     Running   0          3s
+postgresql-2   1/1     Running   0          44h
+
+L’opérateur a eu l’information que le primaire connaissait un problème, notamment via le système de Probes. Il a décidé de promouvoir le second en primaire. 
+Un nouveau Pod a été recréé pour remplacer l’ancien et a pu rejoindre le cluster PostgreSQL existant. La bascule s’est donc faite automatiquement. 
+Par un système de labels, les Services qui permettent d’accéder aux instances ont été mis à jour automatiquement et redirigent les connexions vers votre instance .
+----------------------------------------
