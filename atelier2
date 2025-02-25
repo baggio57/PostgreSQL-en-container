@@ -151,16 +151,17 @@ Je n'ai plus d'erreur lorsque j'applique ces 3 nouveaux fichiers.
 J'accede bien à la console web de pgadmin4 => url = pgadmin.developpement.insee.fr
 Le user plus mot de passe se trouvent dans le fichier de deploiement de pgadmin4.
 
-Pour se connecter en ssh sur le serveur : kubectl exec -ti postgresql-1 -- bash
-Les donnees se trouvent dans :
-postgres@postgresql-1:~/data/pgdata$ ls /var/lib/postgresql/data/pgdata
-base              global         pg_dynshmem    pg_logical    pg_replslot   pg_stat      pg_tblspc    pg_wal                postgresql.conf
-current_logfiles  override.conf  pg_hba.conf    pg_multixact  pg_serial     pg_stat_tmp  pg_twophase  pg_xact               postmaster.opts
-custom.conf       pg_commit_ts   pg_ident.conf  pg_notify     pg_snapshots  pg_subtrans  PG_VERSION   postgresql.auto.conf  postmaster.pid
-postgres@postgresql-1:~/data/pgdata$
+-----------
+kubectl get service
 
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+pgadmin             ClusterIP   10.233.32.31    <none>        80/TCP     7d3h
+postgresql-r        ClusterIP   10.233.46.76    <none>        5432/TCP   4h1m
+postgresql-ro       ClusterIP   10.233.51.83    <none>        5432/TCP   4h1m
+postgresql-rw       ClusterIP   10.233.27.141   <none>        5432/TCP   4h1m
 
---------------------
+Pour creer une nouvelle connexion sur pgadmin, il faut :
+
 
 
 
