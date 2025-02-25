@@ -46,6 +46,18 @@ postgresql   7m46s   2           2       Cluster in healthy state   postgresql-1
 Bien évidemment, cette instance a pu être déployée aussi vite car l’instance ne contenait aucune donnée.
 Dans un cas réel, les données devront être récupérées depuis le primaire et copiées pour le secondaire.
 
+kubectl delete est une commande essentielle de l'interface de ligne de commande Kubernetes (CLI) utilisée pour supprimer des ressources d'un cluster Kubernetes.
+Voici un aperçu de ses fonctionnalités et de son utilisation :
+- Suppression de ressources : Permet de supprimer divers types de ressources, y compris :
+        Pods
+        Services
+        Déploiements
+        Jeux de réplicas
+        Cartes de configuration
+        Secrets
+
+Dans notre exemple : kubectl delete -f .\moncluster.yaml
+
 -----------------------------
 Perte de l’instance primaire
 Nos deux instances fonctionnent bien jusqu’au jour où l’instance primaire connaît un problème. Véritable cauchemar du DBA, qui, malgré les différentes protections et outils mis en place, 
@@ -71,3 +83,7 @@ L’opérateur a eu l’information que le primaire connaissait un problème, no
 Un nouveau Pod a été recréé pour remplacer l’ancien et a pu rejoindre le cluster PostgreSQL existant. La bascule s’est donc faite automatiquement. 
 Par un système de labels, les Services qui permettent d’accéder aux instances ont été mis à jour automatiquement et redirigent les connexions vers votre instance .
 ----------------------------------------
+D’autres ressources sont quant à elles créées lors de la création d’une instance PostgreSQL.
+Nous l’avons vu par exemple avec la commande "kubectl get pod" qui nous retournait deux lignes correspondant à deux Pods.
+Pour n’en citer que quelques-unes : Pod, Secret, ConfigMap … et des Services.
+
