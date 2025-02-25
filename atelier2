@@ -1,0 +1,60 @@
+D’autres ressources sont quant à elles créées lors de la création d’une instance PostgreSQL.
+Nous l’avons vu par exemple avec la commande "kubectl get pod" qui nous retournait deux lignes correspondant à deux Pods.
+Pour n’en citer que quelques-unes : Pod, Secret, ConfigMap … et des Services.
+
+Qu’est-ce qu’un Service ?
+Tout d’abord, un Pod est volatile par définition et lorsqu’il est recréé, il obtient une nouvelle adresse IP. 
+Comment un client (i.e application) pourrait-il accéder de manière pérenne à ce Pod (par exemple, une instance PostgreSQL) alors que l’adresse IP change ? 
+On pourrait imaginer passer par une résolution DNS, avec la modification de l’adresse IP, mais encore faut-il que l’actualisation DNS se fasse assez rapidement…
+
+Un Service se charge d’acheminer les connexions clientes vers l’application demandée. Les clients se connectent donc à ce composant et ce dernier choisit où 
+transmettre le flux réseau en se basant sur des labels positionnés sur le ou les Pods concernés.
+
+Ainsi, un Service est donc plus “stable” dans le temps qu’un Pod. Nos clients (i.e applications) peuvent donc utiliser son nom DNS (ou l’adresse IP) pour accéder aux applications. 
+Je vous renvoie sur la documentation Kubernetes pour découvrir ce qu’est un Service et les différents types qui existent.
+
+CloudNativePG crée trois services pour chaque cluster PostgreSQL déployé. Par exemple, pour le cluster que nous avons déployé la dernière fois, il existe :
+
+    un service qui permet d’accéder au primaire, en lecture/écriture : postgresql-rw ;
+    un service qui permet d’accéder uniquement au(x) secondaire(s), en lecture seule : postgresql-ro ;
+    un service qui permet d’accéder à toutes les instances : postgresql-r.
+
+La pratique vaut souvent plus qu’un long discours. Regardons cela avec notre cluster PostgreSQL précédent et l’application pgAdmin4.
+
+-----------
+fichier yaml pour deployer pgAdmin4 :
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+    spec:
+      containers:
+        - name: pgadmin
+          image: dpage/pgadmin4
+          ports:
+            - containerPort: 80
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: admin@example.com
+            - name: PGADMIN_DEFAULT_PASSWORD
+              value: admin
+
+-----------------
+Toujours la meme commande pour deployer : kubectl apply -f .\pgadmin4.yaml
+
+Pour verifier son installation : kubectl get pods
+
+NAME                       READY   STATUS    RESTARTS   AGE
+pgadmin-7989b7989f-sfdkz   1/1     Running   0          42s
+postgresql-1               1/1     Running   0          4m59s
+
