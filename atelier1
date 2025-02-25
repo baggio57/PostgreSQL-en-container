@@ -1,0 +1,28 @@
+rappel :
+
+Un opérateur est un outil logiciel qui élargit les fonctionnalités de Kubernetes afin de gérer spécifiquement un type de ressource ou d’application.
+Garce à cet opérateur, et notamment CloudNativePG, il nous est possible de déployer facilement une instance PostgreSQL dans notre cluster Kubernetes.
+
+pre-requis :
+- le cluster est opérationnel
+- l'opérateur CloudNativePG est installé
+
+Déployer une instance :
+
+contenu de mon premier fichier yaml :
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.0
+  instances: 1
+  storage:
+    size: 20Gi
+
+Pour appliquer ce fichier, il suffit d'executer la commande : kubectl apply -f .\moncluster.yaml
+Quelques temps apres, notre cluster postgresql est UP (kubectl get cluster) :
+
+postgresql       12m   1           1       Cluster in healthy state   postgresql-1
+
