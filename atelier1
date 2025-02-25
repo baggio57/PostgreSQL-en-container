@@ -26,3 +26,26 @@ Quelques temps apres, notre cluster postgresql est UP (kubectl get cluster) :
 
 postgresql       12m   1           1       Cluster in healthy state   postgresql-1
 
+La commande : kubectl get pod posgtresql-1 => nous montre le status de notre pod :
+
+NAME           READY   STATUS    RESTARTS   AGE
+postgresql-1   1/1     Running   0          14m
+
+-------------------------------------
+
+Déployer une instance secondaire :
+
+Il suffit de modifier notre fichier yaml, et notamment la variable instance (de 1 à 2). Puis d'appliquer ce changement.
+Nous avons alors un cluster PostgreSQL avec deux instances. Par défaut, la seconde instance est configurée pour fonctionner en réplication asynchrone.
+Le primaire correspond au Pod postgresql-1 comme l’indique la colonne PRIMARY.
+
+kubectl get cluster
+NAME         AGE     INSTANCES   READY   STATUS                     PRIMARY
+postgresql   7m46s   2           2       Cluster in healthy state   postgresql-1
+
+Bien évidemment, cette instance a pu être déployée aussi vite car l’instance ne contenait aucune donnée.
+Dans un cas réel, les données devront être récupérées depuis le primaire et copiées pour le secondaire.
+
+-----------------------------
+
+
