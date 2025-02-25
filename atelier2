@@ -52,9 +52,106 @@ spec:
 -----------------
 Toujours la meme commande pour deployer : kubectl apply -f .\pgadmin4.yaml
 
-Pour verifier son installation : kubectl get pods
+Pour verifier son deployement : kubectl get pods
 
 NAME                       READY   STATUS    RESTARTS   AGE
 pgadmin-7989b7989f-sfdkz   1/1     Running   0          42s
 postgresql-1               1/1     Running   0          4m59s
+
+Lorsque pgAdmin4 est déployé, je l’expose avec la commande kubectl port-forward.
+Cela me permet d’atteindre l’interface web depuis mon navigateur en allant sur http://localhost:7777.
+
+kubectl port-forward --address 0.0.0.0 $(kubectl get pod -o name | grep pgadmin) 7777:80 => attention cette commande ne focntionne pas sous powershell !!!
+
+Sous windows :
+kubectl port-forward --address 0.0.0.0 pgadmin-7989b7989f-sfdkz 7777:80
+Forwarding from 0.0.0.0:7777 -> 80
+
+avec : pgadmin-7989b7989f-sfdkz le nom de mon pod "pgadmin4"
+
+quand j'execute cette commande, j'ai l'erreur suivante :
+Warning: would violate PodSecurity "restricted:v1.31": allowPrivilegeEscalation != false (container "pgadmin" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "pgadmin" must set securityContext.capabilities.drop=["ALL"]), runAsNonRoot != true (pod or container "pgadmin" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "pgadmin" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")
+deployment.apps/pgadmin created
+
+suite aux travaux effectues par olivier, j'ai modifie mon fichier yaml :
+Pour que cela focntionne, il faut en plus creer un fichier ingress et un fichier service :
+
+fichier deploimenent de pgadmin4 :
+------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+    spec:
+      containers:
+        - name: pgadmin
+          image: dpage/pgadmin4
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: true
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: admin@insee.fr
+            - name: PGADMIN_DEFAULT_PASSWORD
+              value: adminpg
+--------------
+fichier ingress :
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgadmin-ingress
+  namespace:
+  labels:
+    name: pgadmin-ingress
+  annotations:                                                   # <- Cette ligne
+    cert-manager.io/cluster-issuer: "developpement-insee-fr"     # <- Cette ligne
+spec:
+  tls:
+    - hosts:
+        - pgadmin.developpement.insee.fr
+      secretName: pgadmin-ingress-cert                                # <- Cette ligne 
+  rules:
+    - host: pgadmin.developpement.insee.fr
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: pgadmin
+                port:
+                  number: 80
+------
+fichier service :
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin
+spec:
+  selector:
+    app: pgadmin
+  ports:
+  - port: 80
+    targetPort: 80
+
+Je n'ai plus d'erreur lorsque j'applique ces 3 nouveaux fichies.
+J'accede bien à la console web de pgadmin4 => url = pgadmin.developpement.insee.fr
+Le user plus mot de passe se trouve dans le fichier de deploiement de pgadmin4.
+
+--------------------
+
+
 
