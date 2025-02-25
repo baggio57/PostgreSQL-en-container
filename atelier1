@@ -84,4 +84,10 @@ Un nouveau Pod a été recréé pour remplacer l’ancien et a pu rejoindre le c
 Par un système de labels, les Services qui permettent d’accéder aux instances ont été mis à jour automatiquement et redirigent les connexions vers votre instance .
 ----------------------------------------
 
-
+Pour se connecter en ssh sur le serveur : kubectl exec -ti postgresql-1 -- bash
+Les donnees se trouvent dans :
+postgres@postgresql-1:~/data/pgdata$ ls /var/lib/postgresql/data/pgdata
+base              global         pg_dynshmem    pg_logical    pg_replslot   pg_stat      pg_tblspc    pg_wal                postgresql.conf
+current_logfiles  override.conf  pg_hba.conf    pg_multixact  pg_serial     pg_stat_tmp  pg_twophase  pg_xact               postmaster.opts
+custom.conf       pg_commit_ts   pg_ident.conf  pg_notify     pg_snapshots  pg_subtrans  PG_VERSION   postgresql.auto.conf  postmaster.pid
+postgres@postgresql-1:~/data/pgdata$
