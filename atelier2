@@ -181,6 +181,7 @@ Dans mon cas, et sous windows, la librairie n'etant pas installée, j'ai juste e
 kubectl get secret postgresql-app -o json => j'ai recupere la valeur de data.password
 
 Puis en me connectant en ssh au pod, j'ai execute la commande echo 'valeur' | base64 -d => cela m'a donné le mot de passe pour me connecter à la console.
+(mot de passe = ztQIcqbJE0I2qB3knyrJHC2ECaEXBEkzwe7799cLJXoADRRGEWORYo1pnxpxnZG5)
 
 
 
