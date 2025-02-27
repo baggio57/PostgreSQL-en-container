@@ -176,7 +176,7 @@ En combinant plusieurs outils, je récupère le mot de passe du rôle app dans l
 L’outil jq, véritable couteaux suisse de la manipulation de données au format JSON, permet d’extraire la valeur de la clé .data.password. 
 Celle-ci étant encodée en Base64, j’utilise donc l’outil base64 pour le décoder.
 
-Dans mon cas, et sous windows, la librairie n'etant pas installée, j'ai juste executee : 
+Dans mon cas, et sous windows, la librairie n'etant pas installée, j'ai juste execute : 
 
 kubectl get secret postgresql-app -o json => j'ai recupere la valeur de data.password
 
@@ -184,7 +184,7 @@ Puis en me connectant en ssh au pod, j'ai execute la commande echo 'valeur' | ba
 cela m'a donné le mot de passe pour me connecter à la bdd via pgamdin
 (mot de passe = ztQIcqbJE0I2qB3knyrJHC2ECaEXBEkzwe7799cLJXoADRRGEWORYo1pnxpxnZG5)
 
-
+----------
 
 
 
